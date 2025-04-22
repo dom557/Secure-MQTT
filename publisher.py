@@ -6,11 +6,15 @@ def on_connect(client, userdata, flags, rc):
     print("Publisher connected with result code", rc)
 
 client = mqtt.Client()
-client.username_pw_set("abahazem", "abahazem")
 client.on_connect = on_connect
 
-client.tls_set(ca_certs="certs/ca.crt")
-client.tls_insecure_set(True)
+client.tls_set(
+    ca_certs="certs/ca.crt",
+    certfile="certs/client.crt",
+    keyfile="certs/client.key"
+)
+client.tls_insecure_set(False)
+
 client.connect("localhost", 8883)
 
 client.loop_start()  # use loop_start to allow sending messages in background

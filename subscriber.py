@@ -26,12 +26,22 @@ def on_message(client, userdata, msg):
     console.print(table)
 
 client = mqtt.Client()  # ← connecting to MQTT client
-client.username_pw_set("abahazem", "abahazem")
-client.tls_set("certs/ca.crt")
-client.tls_insecure_set(True)
+client.tls_set(
+    ca_certs="certs/ca.crt",
+    certfile="certs/client.crt",
+    keyfile="certs/client.key"
+)
+client.tls_insecure_set(False)
+
 client.on_connect = on_connect
 client.on_message = on_message
 
 console.print("[bold blue]Starting Terminal Dashboard...[/]")
 client.connect(BROKER, PORT)
-client.loop_forever()
+try:
+    client.loop_forever()
+except KeyboardInterrupt:
+    print("Stopped by user.")
+    client.loop_stop()
+    client.disconnect()
+console.print("[bold red]Disconnected from MQTT broker.[/]")
